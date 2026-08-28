@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "B2BLeadPayload",
+  "description": "Payload format sent by the frontend to Make.com webhook",
+  "type": "object",
+  "properties": {
+    "fullName": {
+      "type": "string",
+      "description": "Full name of the business lead / decision maker",
+      "example": "Carlos Mendoza"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Corporate email address",
+      "example": "cmendoza@repuestoslaser.com"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Normalized phone number with country code in E.164-compatible format",
+      "example": "+58 4141234567"
+    },
+    "company": {
+      "type": "string",
+      "description": "Company / Organization name",
+      "example": "Autopartes Laser & Liberty C.A."
+    },
+    "industry": {
+      "type": "string",
+      "enum": [
+        "Agricultura y Ganadería",
+        "Banca y Finanzas",
+        "Comercio Mayorista / B2B",
+        "Comercio Minorista / Retail",
+        "Construcción e Inmobiliaria",
+        "Educación",
+        "Logística y Transporte",
+        "Manufactura e Industria",
+        "Salud y Farmacéutica",
+        "Servicios Automotrices",
+        "Tecnología y Software",
+        "Otro"
+      ],
+      "description": "Industry sector"
+    },
+    "budget": {
+      "type": "string",
+      "enum": [
+        "Menos de $1,000",
+        "$1,000 - $5,000",
+        "$5,000 - $10,000",
+        "Más de $10,000"
+      ],
+      "description": "Estimated budget tier for BANT triage"
+    },
+    "country": {
+      "type": "string",
+      "description": "ISO 3166-1 alpha-2 country code",
+      "example": "VE"
+    },
+    "submittedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 creation timestamp",
+      "example": "2026-08-28T18:30:00.000Z"
+    }
+  },
+  "required": [
+    "fullName",
+    "email",
+    "phone",
+    "company",
+    "industry",
+    "budget",
+    "country",
+    "submittedAt"
+  ]
+}

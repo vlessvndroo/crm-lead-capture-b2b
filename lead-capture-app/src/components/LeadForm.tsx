@@ -22,9 +22,8 @@ const LeadForm: React.FC = () => {
     budget: '$1,000 - $5,000',
   });
 
-  // Estado independiente para rastrear qué país seleccionó el usuario en la bandera
   const [country, setCountry] = useState<any>('VE');
-
+  const [errors, setErrors] = useState<Partial<Record<keyof LeadData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
@@ -33,18 +32,50 @@ const LeadForm: React.FC = () => {
     import.meta.env.VITE_MAKE_WEBHOOK_URL || 
     'https://hook.us2.make.com/b6w8ce75jnfd6b3c1388eb2towlwpz6p';
 
+  const validate = (): boolean => {
+    const newErrors: Partial<Record<keyof LeadData, string>> = {};
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Por favor ingresa tu nombre completo.';
+    } else if (formData.fullName.trim().length < 3) {
+      newErrors.fullName = 'El nombre debe tener al menos 3 caracteres.';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      newErrors.email = 'El correo corporativo es obligatorio.';
+    } else if (!emailRegex.test(formData.email.trim())) {
+      newErrors.email = 'Ingresa un formato de correo válido (ej. nombre@empresa.com).';
+    }
+
+    if (!formData.phone || formData.phone.trim().length < 6) {
+      newErrors.phone = 'Por favor ingresa un número de teléfono válido.';
+    }
+
+    if (!formData.company.trim()) {
+      newErrors.company = 'El nombre de la empresa es obligatorio.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+    // Limpiamos el error del campo que el usuario está editando
+    if (errors[name as keyof LeadData]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.phone) {
-      alert("Por favor ingresa un número de teléfono válido.");
+    if (!validate()) {
       return;
     }
 
@@ -92,6 +123,7 @@ const LeadForm: React.FC = () => {
           industry: 'Tecnología y Software', 
           budget: '$1,000 - $5,000' 
         });
+        setErrors({});
       } else {
         throw new Error('Error en la respuesta del servidor');
       }
@@ -243,6 +275,18 @@ const LeadForm: React.FC = () => {
           border-color: #3b82f6; /* border-blue-500 */
           box-shadow: 0 0 0 1px #3b82f6;
         }
+
+        /* Error state para el componente de teléfono */
+        .custom-phone-input.phone-has-error .PhoneInputCountry,
+        .custom-phone-input.phone-has-error .PhoneInputInput {
+          border-color: #fca5a5; /* border-red-300 */
+          background-color: rgba(254, 242, 242, 0.25);
+        }
+        .custom-phone-input.phone-has-error .PhoneInputCountry:focus-within,
+        .custom-phone-input.phone-has-error .PhoneInputInput:focus {
+          border-color: #ef4444; /* border-red-500 */
+          box-shadow: 0 0 0 1px #ef4444;
+        }
       `}</style>
 
       <h2 className="text-2xl font-bold text-gray-800 mb-2">Solicitar Asesoría B2B</h2>
@@ -250,63 +294,95 @@ const LeadForm: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo *</label>
           <input
             type="text"
             name="fullName"
-            required
             value={formData.fullName}
             onChange={handleChange}
             placeholder="Ej. Juan Pérez"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none text-sm transition-colors ${
+              errors.fullName 
+                ? 'border-red-300 focus:ring-1 focus:ring-red-500 focus:border-red-500 bg-red-50/20' 
+                : 'border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+            }`}
           />
+          {errors.fullName && (
+            <p className="mt-1 text-xs text-red-600 font-medium flex items-center gap-1">
+              <span>⚠</span> {errors.fullName}
+            </p>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Correo Corporativo</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Correo Corporativo *</label>
           <input
             type="email"
             name="email"
-            required
             value={formData.email}
             onChange={handleChange}
-            placeholder="Ej. ejemplo@ejemplo.com"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+            placeholder="Ej. juan@empresa.com"
+            className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none text-sm transition-colors ${
+              errors.email 
+                ? 'border-red-300 focus:ring-1 focus:ring-red-500 focus:border-red-500 bg-red-50/20' 
+                : 'border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+            }`}
           />
+          {errors.email && (
+            <p className="mt-1 text-xs text-red-600 font-medium flex items-center gap-1">
+              <span>⚠</span> {errors.email}
+            </p>
+          )}
         </div>
 
         {/* CONTENEDOR DEL TELÉFONO PERSONALIZADO */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono Corporativo *</label>
           <div 
-            className="custom-phone-input"
+            className={`custom-phone-input ${errors.phone ? 'phone-has-error' : ''}`}
             style={{ 
               '--calling-code': `"+${country ? getCountryCallingCode(country) : '58'}"` 
             } as React.CSSProperties}
           >
             <PhoneInput
-              international={false} // Evita que se escriba el prefijo dentro del input blanco
+              international={false}
               defaultCountry="VE"
               country={country}
               onCountryChange={setCountry}
               value={formData.phone}
-              onChange={(value) => setFormData({ ...formData, phone: value || '' })}
+              onChange={(value) => {
+                setFormData({ ...formData, phone: value || '' });
+                if (errors.phone) setErrors((prev) => ({ ...prev, phone: undefined }));
+              }}
               placeholder="414 1234567"
             />
           </div>
+          {errors.phone && (
+            <p className="mt-1 text-xs text-red-600 font-medium flex items-center gap-1">
+              <span>⚠</span> {errors.phone}
+            </p>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de la Empresa</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de la Empresa *</label>
           <input
             type="text"
             name="company"
-            required
             value={formData.company}
             onChange={handleChange}
             placeholder="Ej. Repuestos La Pastora CA"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none text-sm transition-colors ${
+              errors.company 
+                ? 'border-red-300 focus:ring-1 focus:ring-red-500 focus:border-red-500 bg-red-50/20' 
+                : 'border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+            }`}
           />
+          {errors.company && (
+            <p className="mt-1 text-xs text-red-600 font-medium flex items-center gap-1">
+              <span>⚠</span> {errors.company}
+            </p>
+          )}
         </div>
 
         <div>

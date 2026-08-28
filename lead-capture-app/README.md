@@ -78,7 +78,7 @@ flowchart LR
 ### Pasos
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/b2b-lead-capture-crm.git
+git clone https://github.com/vlessvndroo/crm-lead-capture-b2b.git
 
 # 2. Entrar al directorio
 cd b2b-lead-capture-crm/lead-capture-app

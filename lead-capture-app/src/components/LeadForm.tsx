@@ -51,9 +51,24 @@ const LeadForm: React.FC = () => {
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
-    // Estructuramos el payload enriquecido con timestamp y país para facilitar el triaje en Make
+    // Formateamos a E.164 legible con espacio para que Google Sheets lo guarde como texto puro sin necesidad de comillas en Make
+    const formatPhoneE164 = (rawPhone: string, c: any) => {
+      const dialCode = `+${c ? getCountryCallingCode(c) : '58'}`;
+      let clean = rawPhone.trim();
+      if (!clean.startsWith('+')) {
+        return `${dialCode} ${clean.replace(/^0+/, '')}`;
+      }
+      const dialDigits = dialCode.replace('+', '');
+      if (clean.startsWith(`+${dialDigits}`) && !clean.includes(' ')) {
+        return `+${dialDigits} ${clean.slice(dialDigits.length + 1)}`;
+      }
+      return clean;
+    };
+
+    // Estructuramos el payload enriquecido con timestamp, país y teléfono normalizado
     const payload = {
       ...formData,
+      phone: formatPhoneE164(formData.phone, country),
       country: country || 'VE',
       submittedAt: new Date().toISOString(),
     };

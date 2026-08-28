@@ -51,25 +51,9 @@ const LeadForm: React.FC = () => {
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
-    // Normalizamos el teléfono para asegurar el '+' y un espacio que impida que Google Sheets lo convierta a número
-    const normalizePhone = (rawPhone: string, c: any) => {
-      const dialCode = `+${c ? getCountryCallingCode(c) : '58'}`;
-      let clean = rawPhone.trim();
-      if (!clean.startsWith('+')) {
-        return `${dialCode} ${clean}`;
-      }
-      // Si viene como +584245042858 sin espacio, insertamos el espacio después del prefijo
-      const dialDigits = dialCode.replace('+', '');
-      if (clean.startsWith(`+${dialDigits}`) && !clean.includes(' ')) {
-        return `+${dialDigits} ${clean.slice(dialDigits.length + 1)}`;
-      }
-      return clean;
-    };
-
-    // Estructuramos el payload enriquecido con timestamp, país y teléfono normalizado
+    // Estructuramos el payload enriquecido con timestamp y país para facilitar el triaje en Make
     const payload = {
       ...formData,
-      phone: normalizePhone(formData.phone, country),
       country: country || 'VE',
       submittedAt: new Date().toISOString(),
     };

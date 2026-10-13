@@ -1,3 +1,7 @@
+## English summary
+B2B lead capture & qualification pipeline: a React/TypeScript form feeds a Make automation that routes and qualifies leads for a sales team, with CRM storage and real-time alerts.
+> Note: this public demo uses Google Sheets + Telegram. The production deployment adds Gemini-based lead scoring, Airtable CRM and WhatsApp/Twilio notifications (client code kept private).
+
 # 🚀 B2B Automated Lead Ingestion & Qualification Pipeline
 
 [![CI Pipeline](https://github.com/vlessvndroo/crm-lead-capture-b2b/actions/workflows/ci.yml/badge.svg)](https://github.com/vlessvndroo/crm-lead-capture-b2b/actions)
@@ -132,4 +136,4 @@ La aplicación está lista para ser desplegada en **Vercel** o **Netlify**:
 
 Proyecto desarrollado como parte de un sistema de captación y automatización de procesos comerciales B2B.  
 *Repositorio:* [github.com/vlessvndroo/crm-lead-capture-b2b](https://github.com/vlessvndroo/crm-lead-capture-b2b)  
-*Contacto / LinkedIn:* [[Tu Enlace de LinkedIn]](https://linkedin.com)
+*Contacto / LinkedIn:* [LinkedIn](https://www.linkedin.com/in/javierdiaddezio)
